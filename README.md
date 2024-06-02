@@ -11,7 +11,11 @@
 - src/pages/index.html — HTML-файл главной страницы
 - src/types/index.ts — файл с типами
 - src/index.ts — точка входа приложения
+<<<<<<< HEAD
 - src/scss/styles.scss — корневой файл стилей
+=======
+- src/styles/styles.scss — корневой файл стилей
+>>>>>>> 59bbabd51aababad16dc6a4751c9b8af4ff4c37f
 - src/utils/constants.ts — файл с константами
 - src/utils/utils.ts — файл с утилитами
 
@@ -40,6 +44,7 @@ npm run build
 ```
 yarn build
 ```
+<<<<<<< HEAD
 ## Данные и типы, используемые в приложении
 
 Карточка товара
@@ -250,3 +255,5 @@ export type TUserModalEmailPhone = Pick<IUser, "email"|"phone">
  - `order:submit` - событие, генерируемое при прохождении формы оплаты с номеро и имэилои
  - `cart:open` - открытие модального окна корзины
  - `card:previewClear` - необходима очистка данных выбранной для показа в модальном окне карточки
+=======
+>>>>>>> 59bbabd51aababad16dc6a4751c9b8af4ff4c37f
