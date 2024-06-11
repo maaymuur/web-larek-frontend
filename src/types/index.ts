@@ -1,44 +1,42 @@
-export interface ICard{
+export interface IProduct{
     id:string;
     description:string;
     image:string;
     title:string;
     category:string;
-    price:number;
+    price:number | null;
 }
 
-export interface IUser{
+export interface IOrder{
+    id:string;
     payment:string;
     email:string;
     phone:number;
     address:string;
+    total:number;
+    items:IProduct[];
 }
 
-export interface ICardsData{
-    cards:ICard[];
-    preview:string | null;
-    getCard(cardId:string):ICard; 
+export type FormErrors = {
+	email?: string;
+	phone?: string;
+	address?: string;
+	payment?: string;
 }
 
-export interface IUserData{
-    getUserInfo():TUserInfo;
-    setUserInfo(userData:IUser):void;
-    checkUserValidation(data:Record<keyof TUserInfo,string>):boolean;
+export interface IProductData{
+    items:IProduct[];
+    getProduct(productId:string):IProduct; 
 }
 
-export interface ICartsData{
-    total:ICard['price'];
-    items:ICard['id'];
-    addCard(card:ICard):void;
-    deleteCard(cardId:string, playload:null):void;
+export interface IOrderData{
+    getOrderInfo():TOrderInfo;
+    setOrderInfo(userData:IOrder):void;
+    checkOrderValidation(data:Record<keyof TOrderInfo,string>):boolean;
 }
 
-
-
-
-export type TCardInfo = Pick<ICard,  "image" | "title" | "category" | "price">
-export type TCardModalInfo = Pick<ICard, "description" | "image" | "title" | "category" | "price">
-export type TCartModal = Pick<ICart, "total" | "items">
-export type TUserModalPaymentAddress = Pick<IUser, "payment"|"address">
-export type TUserModalEmailPhone = Pick<IUser, "email"|"phone">
-export type TUserInfo = Pick<IUser, "email"|"phone"|"payment"|"address">
+export type TProductInfo = Pick<IProduct,  "image" | "title" | "category" | "price">
+export type TProductModalInfo = Pick<IProduct, "description" | "image" | "title" | "category" | "price">
+export type TOrderModalPaymentAddress = Pick<IOrder, "payment"|"address">
+export type TOrderModalEmailPhone = Pick<IOrder, "email"|"phone">
+export type TOrderInfo = Pick<IOrder, "email"|"phone"|"payment"|"address">
