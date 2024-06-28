@@ -3,18 +3,21 @@ export interface IProduct{
     description:string;
     image:string;
     title:string;
-    category:string;
+    category:ProductCategory;
     price:number | null;
 }
 
+export type ListItem = {
+    index: number
+}
+
 export interface IOrder{
-    id:string;
     payment:string;
     email:string;
-    phone:number;
+    phone:string;
     address:string;
     total:number;
-    items:IProduct[];
+    items:string[];
 }
 
 export type FormErrors = {
@@ -24,19 +27,41 @@ export type FormErrors = {
 	payment?: string;
 }
 
-export interface IProductData{
-    items:IProduct[];
-    getProduct(productId:string):IProduct; 
+
+export interface IOrderResult {
+    id: string
+    total: number
+    error?: string
 }
 
-export interface IOrderData{
-    getOrderInfo():TOrderInfo;
-    setOrderInfo(userData:IOrder):void;
-    checkOrderValidation(data:Record<keyof TOrderInfo,string>):boolean;
+export interface IAppData {
+    products: IProduct[]
+    basket: IProduct[]
+    order: IOrder
 }
 
-export type TProductInfo = Pick<IProduct,  "image" | "title" | "category" | "price">
-export type TProductModalInfo = Pick<IProduct, "description" | "image" | "title" | "category" | "price">
-export type TOrderModalPaymentAddress = Pick<IOrder, "payment"|"address">
-export type TOrderModalEmailPhone = Pick<IOrder, "email"|"phone">
-export type TOrderInfo = Pick<IOrder, "email"|"phone"|"payment"|"address">
+
+export type TBasketProduct = Pick<IProduct, "id" | "title" | "price">
+
+export enum ProductCategory {
+    'софт-скил' = 'soft',
+    'другое' = 'other',
+    'хард-скил' = 'hard',
+    'дополнительное' = 'additional',
+    'кнопка' = 'кнопка'
+}
+
+export enum Events {
+    PRODUCTS_CHANGED = 'products:changed',
+    PRODUCT_OPEN_IN_MODAL = 'product:openInModal',
+    ADD_PRODUCT_TO_BASKET = 'product:addToBasket',
+    MODAL_OPEN = 'modal:open',
+    MODAL_CLOSE = 'modal:close',
+    BASKET_OPEN = 'basket:open',
+    ORDER_START = 'order:start',
+    REMOVE_PRODUCT_FROM_BASKET = 'product:removeFromBasket',
+    SET_PAYMENT_TYPE = 'order:setPaymentType',
+    ORDER_READY = 'order:ready',
+    FORM_ERRORS_CHANGED = 'form:errorsChanged',
+    ORDER_CLEAR = 'order:clear',
+}

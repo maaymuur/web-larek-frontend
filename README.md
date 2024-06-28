@@ -50,29 +50,27 @@ yarn build
 Товар
 
 ```
-export interface IProduct{
-    id:string;
-    description:string;
-    image:string;
-    title:string;
-    category:string;
-    price:number | null;
+export interface IProduct {
+    id: string - идентификатор продукта
+    description: string - описание продукта
+    image: string - урл на картинку
+    title: string - название продукта
+    category: ProductCategory - категория продукта
+    price: number | null - цена продукта
 }
-
 
 Заказ
 
 ```
-export interface IOrder{
-    id:string;
-    payment:string;
-    email:string;
-    phone:number;
-    address:string;
-    total:number;
-    items:IProduct[];
+export interface IOrder {
+    payment: OrderPayment - тип оплаты
+    email: string - email покупателя
+    phone: string - телефон покупателя
+    address: string - адрес покупателя
+    total: number - сумма заказа
+    errors: FormErrors - ошибки формы
+    items: IProduct[] - список продуктов в заказе
 }
-
 
 ```
 Ошибки в форме
@@ -85,37 +83,54 @@ export type FormErrors = {
 }
 
 ```
-Интерфейс хранения массива карточек товаров
+Категория продукта
 
 ```
-export interface IProductData{
-    items:IProduct[];
-    getProduct(productId:string):IProduct; 
+type ProductCategory = "софт-скил" | "другое" | "дополнительное" | "кнопка" | "хард-скил"
+
+```
+Тип оплаты
+
+```
+type OrderPayment = "online" | "cash"
+
+```
+
+Отображение продукта на главной странице
+
+```
+type TProduct = Omit<IProduct, "description"> 
+
+```
+
+Продукт в корзине
+
+type TBasketProduct = Pick<ProductView, "id" | "title" | "price"> 
+
+
+```
+
+Результат заказа
+
+```
+
+export interface IOrderResult {
+    id: string - идентификатор заказа
+    total: number - сумма заказа
 }
 
+```
 
-Данные товара, используемые просто в карточках товаров на главной странице
+Типы открытого модального окна
 
 ```
-export type TProductInfo = Pick<IProduct,  "image" | "title" | "category" | "price">
- 
-Данные товара, используемые в модальном окне детального изучения карточки 
 
-export type TProductModalInfo = Pick<IProduct, "description" | "image" | "title" | "category" | "price">
-
-Данные заказа, используемые в модальном окне заполнения иформации покупки: адрес и оплата
-
-export type TOrderModalPaymentAddress = Pick<IOrder, "payment"|"address">
-
-Данные заказа, используемые в модальном окне заполнения иформации покупки: имэил и номер телефона
-
-export type TOrderModalEmailPhone = Pick<IOrder, "email"|"phone">
-
-Полный список даннх заказа:
-
-export type TOrderInfo = Pick<IOrder, "email"|"phone"|"payment"|"address">
+type AppStateModal = "product" | "basket" | "order"
 
 ```
+
+
+
 
  ## Архитерктура приложения  
 
@@ -137,124 +152,120 @@ export type TOrderInfo = Pick<IOrder, "email"|"phone"|"payment"|"address">
 
 #### Класс EventEmmiter
 
-Брокер событий позволяет отправлять события и подписываться на события, происходящие в системе. Класс используется в презентере для обработки событий и в слоях приложения для генерации событий.
+Реализует паттерн «Наблюдатель» и позволяет подписываться на события и уведомлять подписчиков о наступлении события. Класс используется в презентере для обработки событий и в слоях приложения для генерации событий.\
 
-Основные методы, реализуемые классом описаны интерфейсом  `IEvents`
--`on` - подписка на событие 
--`emit` - инициализация события
--`trigger` - возвращает функцию, при вызове которой инициализируется требуемое в параметрах событие
+Основные методы, реализуемые классом описаны интерфейсом IEvents:
+on(eventName: EventName, callback: (event: T) => void) - добавить обработчик на событие\
+off(eventName: EventName, callback: Subscriber) - удалить обработчик с  события.\
+emit(eventName: string, data?: T) - инициирует событие с передачей данных. \
+onAll(callback: (event: EmitterEvent) => void) - слушать все события.\
+offAll() - удалить все обработчики событий\
+trigger(eventName: string, context?: Partial<T>) - возвращение функции генерации события при вызове
+
+
 
 ### Слой данных
 
-#### Класс Component
-Базовый класс для представлений. В конструкторе принимает элемент разметки, который будет заполняться данными.
+#### Класс AppData
+Класс отвечает за хранение данных приложения
+Расширяет класс Model, Все поля приватные, доступ через методы
+В полях класса хранятся следующие данные:\
 
-Основные методы:
+products: IProduct[] - массив объектов продуктов (товаров)\
+basket: IProduct[] - массив товаров в корзине\
+order: IOrder - заказ\
+selectedProduct: string | null - id товара для отображения в модальном окне\
 
-- setText(element: HTMLElement, value: unknown) - установить текст элементу
-- setImage(element: HTMLImageElement, src: string, alt?: string) - установить изображение элементу с альтернативным текстом (если он передан)
-- render(data?: Partial<T>) - возвращает элемент с заполненными данными. Принимает необязательный параметр data с полями указанного ранее типа данных. (данные могут быть частичными)
+Также класс предоставляет набор методов для взаимодействия с этими данными.\
 
-
-#### Класс Model
-Родительский класс модели данных, работает с дженериками
-
-Конструктор:
-
-- constructor(data: Partial<T>, protected events: IEvents) - принимает данные выбранного типа и экземпляр IEvents для работы с событиями
-
-Основные методы:
-
-- emitChanges(event: string, payload?: object) - сообщает, что модель изменилась. Принимает на вход событие и данные, которые изменились
-
-#### Класс ProductsData
-
-Класс отвечает за хранение данных карточек .\
-Конструктор класса принимает инстант брокера событий\
-В полях класса хранятся следующие данные:
-- products: IProduct[] - массив объектов товаров
-- basket: IProduct[] - массив товаров в корзине
-- order: IOrder - заказ
-- selectedProduct: string | null - id товара для отображения в модальном окне
+setProducts - получаем товары для главной страницы\
+selectProduct - выбор продукта для отображения в модальном окне\
+addProductToBasket - добавление товара в корзину\
+removeProductFromBasket - удаление товара из корзины\
+getBasketProducts - получение товаров в корзине\
+getTotalPrice - получение стоимости всей корзины\
+clearBasket - очищаем корзину\
+clearOrder - очищаем текущий заказ\
+setOrderField - записываем значение в поле заказа\
+validateOrder - валидация полей заказа и установка значений ошибок, если они есть\
 
 
-Так же класс предоставляет набор методов для взаимодействия с этими данными.
-- setProducts - получаем товары для главной страницы
-- selectProduct - выбор продукта для отображения в модальном окне
-- addProductToBasket - добавление товара в корзину
-- removeProductFromBasket - удаление товара из корзины
-- getBasketProducts - получение товаров в корзине
-- getTotalPrice - получение стоимости всей корзины
-- clearBasket - очищаем корзину
-- clearOrder - очищаем текущий заказ
-- setOrderField - записываем значение в поле заказа
-- validateOrder - валидация полей заказа и установка значений ошибок, если они есть
-
-###Классы отображения
-
-Интерфейс IModalInfo
+#### Классы представлений
+###Интерфейс IModalData
 Представляет содержимое модального окна
-
-interface IModalInfo {
+```
+interface IModalData {
   content: HTMLElement - содержимое модального окна
 }
+```
 
-####Класс Modal
-Общий класс для модальных окон\
+###Класс Modal
 
-class Modal extends Component<IModalInfo> {
+Общий класс для модальных окон
+
+```
+class Modal extends Component<IModalData> {
   closeButton: HTMLButtonElement - кнопка закрытия
   content: HTMLElement - содержимое модального окна
 }
-Конструктор принимает на вход HTMLElement и IEvents для работы с событиями
+```
+
+
+###Класс Form
+Общий класс для работы с формами, расширяет Component\
 
 Основные методы:
 
-set content - установить содержимое модального окна
-open - открыть модальное окно, добавляя класс видимости к container и эмитируя событие modal:open.
-close - закрыть модальное окно, удаляя класс видимости из container, очищает содержимое и эмитирует событие modal: close.
+onInputChange - изменение значений полей ввода\
+set isButtonActive - активна ли кнопка отправки\
+set errors - установка текстов ошибок\
 
-####Класс Form
-Общий класс для работы с формами
-
-Основные методы:
-
-onInputChange - изменение значений полей ввода
-set isButtonActive - активна ли кнопка отправки
-set errors - установка текстов ошибок
-
-####Класс BasketView
+###Класс BasketView
 Отображение корзины в модальном окне, расширяет Modal
-
+```
 class BasketView extends Modal {
-  basket: IProduct[] - список продуктов в корзине
-  total: number | null - сумма покупок
+  private basket: IProduct[] - список продуктов в корзине
+  private total: number | null - сумма покупок
 }
-Основные методы
+```
+Основные методы\
 
-set basket - установить список продуктов в корзине
-set total - установить общую сумму продуктов в корзине
+set basket - установить список продуктов в корзине\
+set total - установить общую сумму продуктов в корзине\
 
-####Класс ProductView
+
+###Класс ProductView
 Отображение продукта на главной странице
-
+```
 class ProductView extends Component<IProduct>{
-  product: TProduct
+  private product: TProduct
 }
-
-#####Класс ProductViewModal
+```
+###Класс ProductViewModal
 Отображение продукта в модальном окне
-
+```
 class ProductModalView extends Modal {
-  product: IProduct
+  private product: IProduct
 }
+```
 
-####Класс OrderFormView - форма для заказа
+###Класс OrderFormView - отображение формы заказа
 
+```
 class OrderFormView extends Modal {
   private orderFields: Record<keyof IOrder, [value:string, error:string]> | null
   private buttonActive: Boolean
 }
+```
+###Класс OrderResultView
+
+Отображение результата заказа. Расширяет Modal
+```
+class OrderResultView extends Modal {
+  private description: string
+  private title: string
+}
+```
 
 Основные методы\
 
@@ -262,16 +273,15 @@ class OrderFormView extends Modal {
 - set description - установить описание
 
 Основные события\
-
-- items:changed - изменение списка товаров
-- basket:add-product - добавление товара в корзину
-- basket:remove-product - удаление товара из корзины
-- basket:create-order - оформление заказа
-- basket:open - открытие корзины пользователя
-- product:preview - открытие модалки с товаром
-- form:errors-changed - показ(скрытие) ошибок формы
-- order:open - открытие формы заказа
-- order:clear - очистка формы заказа
-- order:set-payment-type - выбор типа оплаты
-- modal:open - открытие модалки
-- modal:close - закрытие модалки
+products:changed - изменение списка товаров
+basket:add-product - добавление товара в корзину
+basket:remove-product - удаление товара из корзины
+basket:create-order - оформление заказа
+basket:open - открытие корзины пользователя
+product:preview - открытие модалки с товаром
+form:errors-changed - показ(скрытие) ошибок формы
+order:open - открытие формы заказа
+order:clear - очистка формы заказа
+order:set-payment-type - выбор типа оплаты
+modal:open - открытие модалки
+modal:close - закрытие модалки
