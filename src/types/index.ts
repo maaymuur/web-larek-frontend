@@ -1,67 +1,56 @@
 export interface IProduct{
-    id:string;
-    description:string;
-    image:string;
+    id?:string;
+    description?:string;
+    category?:string;
     title:string;
-    category:ProductCategory;
-    price:number | null;
+    price:number;
+    image?:string;
+    index?:string;
 }
 
-export type ListItem = {
-    index: number
-}
-
-export interface IOrder{
-    payment:string;
-    email:string;
-    phone:string;
-    address:string;
+export interface IBasket{
     total:number;
     items:string[];
 }
 
-export type FormErrors = {
-	email?: string;
-	phone?: string;
-	address?: string;
-	payment?: string;
+export interface IOrder{
+    email:string;
+    phone:number | string;
+    address:string;
+    payment:PaymentType;
+    total: number;
+    items: string[];
 }
 
-
-export interface IOrderResult {
-    id: string
-    total: number
-    error?: string
+export interface ISuccessBuy{
+    id:string;
+    total:number;
 }
 
-export interface IAppData {
-    products: IProduct[]
-    basket: IProduct[]
-    order: IOrder
+export interface IErrors{
+    error: string;
+    email:string;
+    phone:number | string;
+    address:string;
+    payment:string;
 }
 
-
-export type TBasketProduct = Pick<IProduct, "id" | "title" | "price">
-
-export enum ProductCategory {
-    'софт-скил' = 'soft',
-    'другое' = 'other',
-    'хард-скил' = 'hard',
-    'дополнительное' = 'additional',
-    'кнопка' = 'кнопка'
+export interface IActions {
+    onClick : ()=> void;
 }
 
-export enum Events {
-    PRODUCTS_CHANGED = 'products:changed',
-    PRODUCT_OPEN_IN_MODAL = 'product:openInModal',
-    ADD_PRODUCT_TO_BASKET = 'product:addToBasket',
-    MODAL_OPEN = 'modal:open',
-    MODAL_CLOSE = 'modal:close',
-    BASKET_OPEN = 'basket:open',
-    ORDER_START = 'order:start',
-    REMOVE_PRODUCT_FROM_BASKET = 'product:removeFromBasket',
-    SET_PAYMENT_TYPE = 'order:setPaymentType',
-    ORDER_READY = 'order:ready',
-    FORM_ERRORS_CHANGED = 'form:errorsChanged',
-    ORDER_CLEAR = 'order:clear',
+export interface IPageLarek {
+    catalog: HTMLElement[];
+    counter: number;
+    locked: boolean;
 }
+
+export enum Categories{
+    'хард-скил'='hard_skills_btn',
+    'софт-скилл'='soft_skills_btn',
+    'другое'='another_btn',
+    'дополнительно'='in_addition_btn',
+    'кнопка'='button_btn'
+}
+
+export type PaymentType = 'card' | 'cash';

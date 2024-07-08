@@ -1,57 +1,60 @@
-import { Component } from "../base/Components";
-import {IEvents} from "../base/Events";
-import {ensureElement} from "../../utils/utils";
+import { View } from "../Component";
+import { EventEmitter } from "../base/events";
+import { ensureElement } from "../../utils/utils";
 
-interface IFormState {
-    valid: boolean;
-    errors: string[];
+interface IForm{
+    valid:boolean;
+    errors:string[];
+    payment?: string; 
+    address?: string; 
+    email?: string,
+    phone?: string,
 }
 
-export class Form<T> extends Component<IFormState> {
-    protected _submit: HTMLButtonElement;
-    protected _errors: HTMLElement;
+export class Form<T> extends View<IForm>{
+    _btn:HTMLButtonElement;
+    _err: HTMLElement;
 
-    constructor(protected container: HTMLFormElement, protected events: IEvents) {
-        super(container);
+    constructor(evt:EventEmitter, container: HTMLFormElement) {
+        super(evt, container);
 
-        this._submit = ensureElement<HTMLButtonElement>(
-            'button[type=submit]',
-            this.container
-        );
-        this._errors = ensureElement<HTMLElement>('.form__errors', this.container);
+        this._btn = ensureElement<HTMLButtonElement>('button[type=submit]', this.container)
+        this._err = ensureElement<HTMLElement>('.form_errors', this.container)
 
-        this.container.addEventListener('input', (e: Event) => {
+        this.container.addEventListener('input', (e:Event)=>{
             const target = e.target as HTMLInputElement;
-            const field = target.name as keyof T;
+            const input = target.name as keyof T;
             const value = target.value;
-            this.onInputChange(field, value);
-        });
+            this.onInputChange(input, value);
+        })
 
         this.container.addEventListener('submit', (e: Event) => {
             e.preventDefault();
-            this.events.emit(`${this.container.name}:submit`);
+            this.evt.emit(`${this.container.className}:submit`);
         });
     }
 
     protected onInputChange(field: keyof T, value: string) {
-        this.events.emit(`${this.container.name}.${String(field)}:change`, {
+        this.evt.emit(`${this.container.className}.${String(field)}:change`, {
             field,
-            value,
+            value
         });
     }
 
     set valid(value: boolean) {
-        this.setDisabled(this._submit,!value);
+       this._btn.disabled = !value;
     }
 
     set errors(value: string) {
-        this.setText(this._errors, value);
+        this.setText(this._err, value);
     }
 
-    render(state: Partial<T> & IFormState) {
-        const { valid, errors, ...inputs } = state;
-        super.render({ valid, errors });
+    render(state: Partial<T> & IForm) {
+        const {valid, errors, ...inputs} = state;
+        super.render({valid, errors});
         Object.assign(this, inputs);
         return this.container;
     }
 }
+
+

@@ -1,118 +1,102 @@
-import { Component } from "./base/Components";
+import { Component } from "./Component";
 import { ensureElement } from "../utils/utils";
-import { ListItem, TBasketProduct, ProductCategory } from "../types";
+import { IActions, IProduct, Categories } from "../types";
 
-interface IProductActions {
-    onClick: (event: MouseEvent) => void;
-}
+export class ProductView extends Component<IProduct> {
+    tit: HTMLElement;
+    priceOfItem: HTMLElement;
+    ind?: HTMLElement;
+    img?: HTMLImageElement;
+    descr?: HTMLElement;
+    btn?: HTMLButtonElement;
+    categor?: HTMLElement;
 
-export interface IProductView {
-    id: string
-    description: string
-    image: string
-    category:ProductCategory
-    title: string
-    price: string
-    button: string
-    status: boolean
-}
-
-export class ProductView extends Component<IProductView> {
-    private _image: HTMLImageElement;
-    private _title: HTMLElement;
-    private _category: HTMLElement;
-    private _price: HTMLElement;
-    protected _button: HTMLButtonElement;
-
-    constructor(container: HTMLElement, actions: IProductActions) {
+    constructor(container: HTMLElement, actions?:IActions){
         super(container);
-
-        this._title = ensureElement<HTMLElement>('.card__title', container);
-        this._image = ensureElement<HTMLImageElement>('.card__image', container);
-        this._category = ensureElement<HTMLElement>('.card__category', container);
-        this._price = ensureElement<HTMLElement>('.card__price', container);
-        this._button = container.querySelector('.card__button');
-
-        if (actions?.onClick) {
-            if (this._button) {
-                this._button.addEventListener('click', actions.onClick);
+    
+        this.tit = ensureElement<HTMLElement>('.card__title', container);
+        this.priceOfItem = ensureElement<HTMLElement>('.card__price', container);
+        this.img = container.querySelector('.card__image');
+        this.btn = container.querySelector('.card__button');
+        this.descr = container.querySelector('.card__text');
+        this.categor = container.querySelector('.card__category');
+        this.ind = container.querySelector('.basket__item-index');
+    
+        if(actions?.onClick) {
+            if(this.btn) {
+                this.btn.addEventListener('click', actions.onClick);
             } else {
                 container.addEventListener('click', actions.onClick);
             }
         }
-    }
+      }
 
-    set title(value: string) {
-        this.setText(this._title, value);
-    }
-
-    set image(value: string) {
-        this.setImage(this._image, value, this.title)
-    }
-
-    set category(value: keyof typeof ProductCategory) {
-        if (this._category) {
-            this.setText(this._category, value);
-            const categoryStyle = `card__category_${ProductCategory[value]}`;
-            this.toggleClass(this._category, categoryStyle, true);
-        }
-    }
-
-    set price(value: string) {
-        this.setText(this._price, value)
-    }
-
-    set status(status: boolean) {
-        if (this._button) {
-            if (this._price.textContent === '') {
-                this.setText(this._button, 'Недоступно');
-                this.setDisabled(this._button, true);
-            } else {
-                this.setText(this._button, status ? 'Уже в корзине' : 'В корзину');
-                this.setDisabled(this._button, status);
+      disablePriceButton(value: number | null) {
+        if(!value) {
+            if(this.btn){
+                this.btn.setAttribute('disabled', 'disabled');
             }
         }
     }
-}
+    
+       set id(value: string) {
+         this.container.dataset.id = value;
+       }
+    
+       get id(): string {
+        return this.container.dataset.id || '';
+       }
+    
+       set title(value: string) {
+        this.setText(this.tit, value);
+       }
+    
+       get title(): string {
+         return this.tit.textContent || '';
+       }
+    
+       set price(value: number | null) {
+        this.setText(this.priceOfItem, (value) ? `${value.toString()} синапсов` : 'Бесценно');
+        this.disablePriceButton(value);
+       }
+    
+       get price(): number {
+         return Number(this.priceOfItem.textContent || '');
+       }
+    
+       set category(value: string) {
+        if (!this.categor) return;
+        this.setText(this.categor, value);
 
-export class ProductViewModal extends ProductView {
-    private _description: HTMLElement;
-
-    constructor(container: HTMLElement, actions: IProductActions) {
-        super(container, actions);
-        this._description = ensureElement<HTMLElement>('.card__text', container);
+        const categoryKey = value as keyof typeof Categories;
+        const categoryClass = Categories[categoryKey];
+        if (categoryClass) {
+            this.categor.classList.add(categoryClass);
+        } 
     }
 
-    set description(value: string) {
-        this.setText(this._description, value)
+    
+       get category(): string {
+          return this.categor.textContent || '';
+       }
+    
+       set index(value: number) {
+        this.setText(this.ind, value);
+       }
+    
+       set image(value: string) {
+        this.setImage(this.img, value, this.title);
+       }
+    
+       set description(value: string) {
+         this.setText(this.descr, value);
+       }
+    
+       set btnTitle(value:string) {
+        if(this.btn) {
+          this.setText(this.btn, value);
+        }
+       }
     }
-}
+    
 
-export class ProductInBasketView extends Component<TBasketProduct | ListItem> {
-    private _index: HTMLElement;
-    private _price: HTMLElement;
-    private _title: HTMLElement;
-    private _button: HTMLButtonElement;
-
-    constructor(container: HTMLElement, actions?: IProductActions) {
-        super(container);
-        this._index = ensureElement<HTMLElement>(`.basket__item-index`, container);
-        this._price = ensureElement<HTMLElement>('.card__price', container);
-        this._title = ensureElement<HTMLElement>('.card__title', container);
-        this._button = container.querySelector('.basket__item-delete');
-
-        this._button.addEventListener('click', actions.onClick);
-    }
-
-    set index(value: number) {
-        this.setText(this._index, value);
-    }
-
-    set price(value: number) {
-        this.setText(this._price, `${value} синапсов`);
-    }
-
-    set title(value: string) {
-        this.setText(this._title, value);
-    }
-}

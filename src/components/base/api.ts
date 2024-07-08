@@ -39,9 +39,4 @@ export class Api {
             body: JSON.stringify(data)
         }).then(this.handleResponse);
     }
-
-    _request(url: string, options: RequestInit) {
-        return fetch(this.baseUrl + url, options)
-            .then(this.handleResponse)
-    }
 }
