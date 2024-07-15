@@ -29,7 +29,7 @@ const events = new EventEmitter();
 // Инициализация объектов приложения
 const appData = new App(events);
 const page = new Page(events, document.body);
-const modal = new Modal(ensureElement<HTMLElement>('.modal-container'), events);
+const modal = new Modal(ensureElement<HTMLElement>('#modal__container'), events);
 const payForm = new Form(events, cloneTemplate(orderFormTemp));
 const basket = new Basket(cloneTemplate(basketTemp), events);
 const complete = new Success(cloneTemplate(successTemp), events);

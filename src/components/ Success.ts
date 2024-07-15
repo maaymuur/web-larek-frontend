@@ -8,6 +8,7 @@ export class Success extends Component<ISuccessBuy> {
     evt: EventEmitter;
     close: HTMLElement;
     
+    
     constructor(container: HTMLElement, events: EventEmitter) {
         super(container);
         this.evt = events;

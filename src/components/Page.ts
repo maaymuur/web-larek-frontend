@@ -12,6 +12,7 @@ export class Page extends View<IPageLarek> {
     constructor(evt: EventEmitter , container: HTMLElement) {
         super(evt, container);
 
+
         this.count = ensureElement('.header__basket-counter');
         this.catal = ensureElement('.gallery');
         this.wrap = ensureElement('.page__wrapper');

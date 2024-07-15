@@ -8,6 +8,7 @@ export class Basket extends View<IBasket> {
     totalItems: HTMLElement;
     btn: HTMLButtonElement;
 
+    
     constructor(container: HTMLElement, events: EventEmitter) {
         super(events, container);
         this.list = ensureElement<HTMLElement>('.basket__list', this.container);
