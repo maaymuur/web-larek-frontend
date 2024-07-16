@@ -23,12 +23,12 @@ export class App {
 
     setProductList(products: IProduct[]) {
         this.products = products;
-        this.evt.emit('products:change', this.products);
+        this.evt.emit('items:change', this.products);
     }
 
     productWindow(product: IProduct) {
         this.productModal = product;
-        this.evt.emit('product:change', this.productModal);
+        this.evt.emit('items:change', this.productModal);
     }
 
     ifInBasket(product: IProduct) {
