@@ -16,7 +16,7 @@ export class larekApi extends Api implements IApi{
     }
 
     getItem(id:string): Promise<IProduct>{
-        return this.get(`/prodycr/${id}`).then(
+        return this.get(`/product/${id}`).then(
             (data:IProduct)=>({
                 ...data,
                 image:this.cdn+data.image
