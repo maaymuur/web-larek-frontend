@@ -34,17 +34,16 @@ export class Form<T> extends View<IForm>{
         });
     }
 
-    protected onInputChange(field: keyof T, value: string) {
-        this.evt.emit(`${this.container.className}.${String(field)}:change`, {
-            field,
+    protected onInputChange(input: keyof T, value: string) {
+        this.evt.emit(`${this.container.className}.${String(input)}:change`, {
+            input,
             value
         });
     }
-
     set valid(value: boolean) {
-       this._btn.disabled = !value;
+        this._btn.disabled = !value;
     }
-
+    
     set errors(value: string) {
         this.setText(this._err, value);
     }

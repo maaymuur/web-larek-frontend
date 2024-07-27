@@ -23,15 +23,16 @@ export class larekApi extends Api implements IApi{
             })
         )
     }
-
-    getListItems():Promise<IProduct[]>{
-        return this.get(`/product`).then((data: ApiListResponse<IProduct>)=>
-        data.items.map((item)=>({
-            ...item,
-            image:this.cdn +item.image
-        }))
-        )
+    
+    getListItems(): Promise<IProduct[]> {
+        return this.get(`/product`).then((data: ApiListResponse<IProduct>) => {
+            return data.items.map((item: IProduct) => ({
+                ...item,
+                image: this.cdn + item.image
+            }));
+        });
     }
+    
 
     orderItems(order: IOrder): Promise<ISuccessBuy> {
         return this.post(`/order`, order).then((data: ISuccessBuy) => {

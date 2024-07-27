@@ -24,6 +24,8 @@ export class Component<T>{
         }
     }
 
+    
+
 
     render(data?:T):HTMLElement{
         Object.assign(this as object, data ?? {});

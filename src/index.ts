@@ -9,10 +9,8 @@ import { Basket } from './components/Basket';
 import { Success } from './components/ Success';
 import { API_URL, CDN_URL } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
-import { View } from './components/Component';
 import { ProductView } from './components/Product';
 import { OrderProduct } from './components/OrderProduct';
-import { Form } from './components/common/Form';
 
 // Инициализация шаблонов
 const itemTemp = ensureElement<HTMLTemplateElement>('#card-preview');
@@ -23,14 +21,14 @@ const orderFormTemp = ensureElement<HTMLTemplateElement>('#order');
 const successTemp = ensureElement<HTMLTemplateElement>('#success');
 
 // Инициализация API и событий
-const api = new larekApi(API_URL, CDN_URL);
+const api = new larekApi(CDN_URL, API_URL);
 const events = new EventEmitter();
 
 // Инициализация объектов приложения
 const appData = new App(events);
 const page = new Page(events, document.body);
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'), events);
-const payForm = new Form(events, cloneTemplate(orderFormTemp));
+const payForm = new OrderProduct(cloneTemplate(orderFormTemp), events);
 const basket = new Basket(cloneTemplate(basketTemp), events);
 const complete = new Success(cloneTemplate(successTemp), events);
 
@@ -44,16 +42,28 @@ events.on('card:select', (item: IProduct) => {
     appData.productWindow(item);
 });
 
-events.on('items:change', (items: IProduct[]) => {
-    page.catalog = items.map(item => {
+events.on('items:change', (items: IProduct[] | IProduct) => {
+    if (Array.isArray(items)) {
+        // Если items является массивом, обновляю каталог
+        page.catalog = items.map(item => {
+            const product = new ProductView(cloneTemplate(itemsListTemp), {
+                onClick: () => {
+                    events.emit('preview:change', item); // Использую событие preview:change для открытия в модальном окне
+                }
+            });
+            return product.render(item);
+        });
+    } else {
+        // Если items не является массивом, обрабатываем его как одиночный объект
         const product = new ProductView(cloneTemplate(itemsListTemp), {
             onClick: () => {
-                events.emit('card:select', item);
+                events.emit('preview:change', items); // Использую событие preview:change для открытия в модальном окне
             }
         });
-        return product.render(item);
-    });
+        page.catalog = [product.render(items)];
+    }
 });
+
 
 events.on('order:submit', () => {
     modal.render({
@@ -64,7 +74,10 @@ events.on('order:submit', () => {
             errors: []
         })
     });
+    
+    console.log('Form rendered'); //
 });
+
 
 // Получение списка товаров и установка их в приложение
 api.getListItems()
@@ -73,20 +86,19 @@ api.getListItems()
 
 // Обработчик изменений ошибок формы
 events.on('formErrors:change', (errors: Partial<IOrder>) => {
-    const { email, phone, address, payment } = errors;
-    payForm.valid = !address && !payment && !email && !phone;
-    payForm.errors = [
-        address ? `${address}` : '',
-        payment ? `${payment}` : '',
-        phone ? `${phone}` : '',
-        email ? `${email}` : ''
-    ].filter(error => error).join('; ');
+    const { address, payment, phone, email } = errors;
+    payForm.valid = !(address || payment || phone || email);
+    payForm.errors = Object.values({address, payment, phone, email })
+      .filter((i) => !!i)
+      .join('; ');
 });
+
 
 // Обработчик изменений заказа
 events.on('order:change', (data: { input: keyof IOrder; value: string }) => {
     appData.orderForm(data.input, data.value);
 });
+
 
 // Открытие формы заказа
 events.on('order:open', () => {
@@ -95,7 +107,7 @@ events.on('order:open', () => {
             payment: 'card',
             address: '',
             valid: false,
-            errors: []
+            errors: [],
         }),
     });
 });
@@ -113,6 +125,7 @@ events.on('contacts:submit', () => {
         })
         .catch(err => console.log(err));
 });
+
 
 // Обработчик изменения предпросмотра товаров
 events.on('preview:change', (item: IProduct) => {
@@ -139,6 +152,8 @@ events.on('preview:change', (item: IProduct) => {
         })
     });
 });
+
+
 
 // Открытие корзины
 events.on('basket:open', () => {

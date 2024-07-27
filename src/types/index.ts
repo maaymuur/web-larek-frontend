@@ -46,11 +46,12 @@ export interface IPageLarek {
 }
 
 export enum Categories{
-    'хард-скил'='hard_skills_btn',
-    'софт-скилл'='soft_skills_btn',
-    'другое'='another_btn',
-    'дополнительно'='in_addition_btn',
-    'кнопка'='button_btn'
+    "софт-скил"= "card__category_soft",
+    "хард-скил"= "card__category_hard",
+    "кнопка"= "card__category_button",
+    "дополнительное"= "card__category_additional",
+    "другое"= "card__category_other"
 }
 
 export type PaymentType = 'card' | 'cash';
+
