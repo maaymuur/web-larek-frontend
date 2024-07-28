@@ -79,7 +79,7 @@ export class App {
 
     validation() {
         this.errors = {};
-
+    
         if (!this.order.payment) {
             this.errors.payment = "Необходимо выбрать способ оплаты";
         }
@@ -92,11 +92,12 @@ export class App {
         if (!this.order.address) {
             this.errors.address = "Необходимо указать адрес";
         }
-
+    
         // Генерация события с обновлёнными ошибками
-        this.evt.emit('errors:change', this.errors);
-
+        this.evt.emit('formErrors:change', this.errors);
+    
         // Проверка, есть ли ошибки
         return Object.keys(this.errors).length === 0;
     }
+    
 }

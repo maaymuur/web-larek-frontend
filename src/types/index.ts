@@ -27,13 +27,14 @@ export interface ISuccessBuy{
     total:number;
 }
 
-export interface IErrors{
-    error: string;
-    email:string;
-    phone:number | string;
-    address:string;
-    payment:string;
+export interface IErrors {
+    error?: string;
+    email?: string;
+    phone?: string | number;
+    address?: string;
+    payment?: string;
 }
+
 
 export interface IActions {
     onClick : ()=> void;

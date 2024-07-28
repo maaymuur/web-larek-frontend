@@ -95,9 +95,11 @@ events.on('formErrors:change', (errors: Partial<IOrder>) => {
 
 
 // Обработчик изменений заказа
-events.on('order:change', (data: { input: keyof IOrder; value: string }) => {
-    appData.orderForm(data.input, data.value);
+// Обработчик изменений заказа
+events.on('order:change', (data: { field: keyof IOrder; value: string | number }) => {
+    appData.orderForm(data.field, data.value);
 });
+
 
 
 // Открытие формы заказа
