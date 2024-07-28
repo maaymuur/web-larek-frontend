@@ -43,6 +43,8 @@ export class OrderProduct extends Form<IOrder> {
         return this._payment; 
     }
 
+    
+
     set phone(value: string) {
         const phoneInput = this.container.querySelector<HTMLInputElement>('[name="phone"]');
         if (phoneInput) {

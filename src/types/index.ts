@@ -13,6 +13,8 @@ export interface IBasket{
     items:string[];
 }
 
+
+
 export interface IOrder{
     email:string;
     phone:number | string;
@@ -30,7 +32,7 @@ export interface ISuccessBuy{
 export interface IErrors {
     error?: string;
     email?: string;
-    phone?: string | number;
+    phone?: string ;
     address?: string;
     payment?: string;
 }
