@@ -3,13 +3,16 @@ import { ensureElement } from "../utils/utils";
 import { EventEmitter } from "./base/events";
 import { Form } from "./common/Form";
 
+
 export class OrderProduct extends Form<IOrder> {
+    
+
     card: HTMLButtonElement;
     cash: HTMLButtonElement;
     private _payment: PaymentType; 
 
-    constructor(container: HTMLFormElement, events: EventEmitter) {
-        super(events, container);
+    constructor(container: HTMLFormElement, evt: EventEmitter, formType: 'order') {
+        super(evt, container, formType);
 
         this.card = ensureElement<HTMLButtonElement>('.button_alt[name=card]', this.container);
         this.cash = ensureElement<HTMLButtonElement>('.button_alt[name=cash]', this.container);
@@ -45,6 +48,11 @@ export class OrderProduct extends Form<IOrder> {
 
     
 
+}
+export class OrderContactProduct extends Form<IOrder> {
+    constructor(container: HTMLFormElement, evt: EventEmitter, formType: 'contacts') {
+        super(evt, container, formType);
+    }
     set phone(value: string) {
         const phoneInput = this.container.querySelector<HTMLInputElement>('[name="phone"]');
         if (phoneInput) {

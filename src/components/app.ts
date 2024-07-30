@@ -10,7 +10,7 @@ export class App {
     };
     order: IOrder = {
         email: '',
-        phone: 0,
+        phone: '',
         address: '',
         payment: 'card',
         total: 0,
@@ -39,8 +39,11 @@ export class App {
         this.basket.items.push(product.id);
         this.basket.total += product.price;
         this.evt.emit('basket:change', this.basket);
+    
+        // Обновление заказа
+        this.order.items = this.basket.items;
+        this.order.total = this.basket.total;
     }
-
     removeEverythingFromBasket() {
         this.basket.items = [];
         this.basket.total = 0;
@@ -51,8 +54,12 @@ export class App {
         this.basket.items = this.basket.items.filter(id => id !== product.id);
         this.basket.total -= product.price;
         this.evt.emit('basket:change', this.basket);
+    
+        // Обновление заказа
+        this.order.items = this.basket.items;
+        this.order.total = this.basket.total;
     }
-
+    
     payTypeFunction(type: PaymentType) {
         this.order.payment = type;
     }
@@ -60,26 +67,24 @@ export class App {
     orderForm(input: keyof IOrder, value: string | number | []) {
         if (input === "payment") {
             this.payTypeFunction(value as PaymentType);
-        } else if (input === "email" || input === "address") {
-            if (typeof value === "string") {
-                this.order[input] = value;
-            }
-        } else if (input === "phone") {
-            if (typeof value === "number") {
-                this.order[input] = value;
-            }
+        } else if (input === "email" || input === "address" || input === "phone") {
+            this.order[input] = value as string;
+        } else if (input === "total") {
+            this.order[input] = value as number;
+        } else if (input === "items") {
+            this.order[input] = value as string[];
         }
-
-        if (this.order.payment && this.validation()) {
-            this.order.total = this.basket.total;
-            this.order.items = this.basket.items;
-            this.evt.emit('order:done', this.order);
+        if (input === 'items') {
+            this.order.total = this.basket.total; // Обновляю сумму заказа на основании корзины
         }
+    
+        this.validation();
     }
-
+    
+    
     validation() {
         this.errors = {};
-    
+
         if (!this.order.payment) {
             this.errors.payment = "Необходимо выбрать способ оплаты";
         }
@@ -92,12 +97,11 @@ export class App {
         if (!this.order.address) {
             this.errors.address = "Необходимо указать адрес";
         }
-    
+
         // Генерация события с обновлёнными ошибками
         this.evt.emit('formErrors:change', this.errors);
-    
+
         // Проверка, есть ли ошибки
         return Object.keys(this.errors).length === 0;
     }
-    
 }

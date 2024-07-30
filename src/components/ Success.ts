@@ -7,8 +7,7 @@ export class Success extends Component<ISuccessBuy> {
     total: HTMLElement;
     evt: EventEmitter;
     close: HTMLElement;
-    
-    
+
     constructor(container: HTMLElement, events: EventEmitter) {
         super(container);
         this.evt = events;
@@ -16,10 +15,15 @@ export class Success extends Component<ISuccessBuy> {
         this.total = ensureElement<HTMLElement>('.order-success__description', this.container);
         this.close.addEventListener('click', () => {
             this.evt.emit('order:result');
-        })
+        });
     }
 
     set summ(value: number) {
         this.setText(this.total, `Списано ${String(value)} синапсов`);
+    }
+
+    render(state: ISuccessBuy) {
+        this.summ = state.total; 
+        return this.container;
     }
 }
