@@ -8,15 +8,14 @@ export class Basket extends View<IBasket> {
     totalItems: HTMLElement;
     btn: HTMLButtonElement;
 
-    
     constructor(container: HTMLElement, events: EventEmitter) {
         super(events, container);
         this.list = ensureElement<HTMLElement>('.basket__list', this.container);
         this.totalItems = ensureElement<HTMLElement>('.basket__price', this.container);
         this.btn = ensureElement<HTMLButtonElement>('.basket__button', this.container);
 
-        if(this.btn){
-            this.btn.addEventListener('click', ()=> {
+        if (this.btn) {
+            this.btn.addEventListener('click', () => {
                 events.emit('order:open');
             });
         }
@@ -40,7 +39,7 @@ export class Basket extends View<IBasket> {
     }
 
     set total(total: number) {
-        this.setText(this.totalItems,(total)?  `${String(total)} синапсов` : '');
+        this.setText(this.totalItems, total ? `${String(total)} синапсов` : '0 синапсов'); // Если total равен 0, отображаем "0 синапсов"
     }
 
 }

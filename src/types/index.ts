@@ -50,9 +50,9 @@ export interface IPageLarek {
 
 export enum Categories{
     "софт-скил"= "card__category_soft",
-    "хард-скил"= "card__category_hard",
     "кнопка"= "card__category_button",
     "дополнительное"= "card__category_additional",
+    "хард-скил"= "card__category_hard",
     "другое"= "card__category_other"
 }
 

@@ -47,8 +47,8 @@ export class Form<T> extends View<IForm> {
         this._btn.disabled = !value;
     }
 
-    set errors(value: string) {
-        this.setText(this._err, value);
+    set errors(value: string[]) {
+        this.setText(this._err, value.join('; '));
     }
 
     render(state: Partial<T> & IForm) {

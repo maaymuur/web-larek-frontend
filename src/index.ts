@@ -84,19 +84,28 @@ events.on('order:change', (data: { field: keyof IOrder; value: string }) => {
 
 events.on('formErrors:change', (errors: Partial<IOrder>) => {
     const { email, phone, address, payment } = errors;
+
+    // Преобразуем ошибки в массив строк
+    const orderErrors = Object.values({ address, payment }).filter(Boolean) as string[];
+    const contactErrors = Object.values({ phone, email }).filter(Boolean) as string[];
+
     payForm.valid = !(address || payment);
     payContactForm.valid = !(email || phone);
-    payForm.errors = Object.values({ address, payment }).filter(Boolean).join('; ');
-    payContactForm.errors = Object.values({ phone, email }).filter(Boolean).join('; ');
+
+    payForm.errors = orderErrors;
+    payContactForm.errors = contactErrors;
 });
 
+
 events.on('order:open', () => {
+    payForm.clear(); // Очистка формы заказа
     modal.render({
         content: payForm.render({ payment: 'card', address: '', valid: false, errors: [] })
     });
 });
 
 events.on('order:submit', () => {
+    payContactForm.clear(); // Очистка формы контактов
     modal.render({
         content: payContactForm.render({ email: '', phone: '', valid: false, errors: [] })
     });
@@ -123,11 +132,24 @@ events.on('contacts:submit', () => {
     api.orderItems(appData.order)
         .then(result => {
             appData.removeEverythingFromBasket();
-            complete.summ = result.total; 
+            complete.summ = result.total;
             modal.render({ content: complete.render({ total: result.total, id: result.id }) });
+            page.counter = 0;
+            basket.items = [];
+            basket.total = 0;
+
+            // Очищаем формы после успешного завершения заказа
+            payForm.clear();
+            payContactForm.clear();
+
+            // Сброс состояния валидации и данных формы
+            payForm.render({ payment: 'card', address: '', valid: false, errors: [] });
+            payContactForm.render({ email: '', phone: '', valid: false, errors: [] });
+
         })
         .catch(err => console.log('Error sending order:', err));
 });
+
 
 events.on('modal:open', () => {
     page.block = true;

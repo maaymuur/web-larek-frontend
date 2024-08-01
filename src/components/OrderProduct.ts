@@ -3,10 +3,7 @@ import { ensureElement } from "../utils/utils";
 import { EventEmitter } from "./base/events";
 import { Form } from "./common/Form";
 
-
 export class OrderProduct extends Form<IOrder> {
-    
-
     card: HTMLButtonElement;
     cash: HTMLButtonElement;
     private _payment: PaymentType; 
@@ -16,7 +13,7 @@ export class OrderProduct extends Form<IOrder> {
 
         this.card = ensureElement<HTMLButtonElement>('.button_alt[name=card]', this.container);
         this.cash = ensureElement<HTMLButtonElement>('.button_alt[name=cash]', this.container);
- 
+
         this.card.addEventListener('click', () => {
             this.payment = 'card';
             this.onInputChange('payment', 'card');
@@ -26,7 +23,6 @@ export class OrderProduct extends Form<IOrder> {
             this.payment = 'cash';
             this.onInputChange('payment', 'cash');
         });
-        
     }
 
     set address(value: string) {
@@ -46,13 +42,19 @@ export class OrderProduct extends Form<IOrder> {
         return this._payment; 
     }
 
-    
-
+    clear() {
+        this.address = '';
+        this.payment = 'card'; 
+        this.errors = [];
+        this.valid = false;
+    }
 }
+
 export class OrderContactProduct extends Form<IOrder> {
     constructor(container: HTMLFormElement, evt: EventEmitter, formType: 'contacts') {
         super(evt, container, formType);
     }
+
     set phone(value: string) {
         const phoneInput = this.container.querySelector<HTMLInputElement>('[name="phone"]');
         if (phoneInput) {
@@ -65,5 +67,12 @@ export class OrderContactProduct extends Form<IOrder> {
         if (emailInput) {
             emailInput.value = value;
         }
+    }
+
+    clear() {
+        this.phone = '';
+        this.email = '';
+        this.errors = [];
+        this.valid = false;
     }
 }

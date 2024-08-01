@@ -68,13 +68,14 @@ export class ProductView extends Component<IProduct> {
         if (!this.categor) return;
         this.setText(this.categor, value);
 
+        this.categor.classList.remove(...Object.values(Categories));
+    
         const categoryKey = value as keyof typeof Categories;
         const categoryClass = Categories[categoryKey];
         if (categoryClass) {
             this.categor.classList.add(categoryClass);
         } 
     }
-
     
        get category(): string {
           return this.categor.textContent || '';

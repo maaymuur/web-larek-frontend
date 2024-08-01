@@ -83,25 +83,26 @@ export class App {
     
     
     validation() {
-        this.errors = {};
+    this.errors = {};
 
-        if (!this.order.payment) {
-            this.errors.payment = "Необходимо выбрать способ оплаты";
-        }
-        if (!this.order.email) {
-            this.errors.email = "Необходимо указать email";
-        }
-        if (!this.order.phone) {
-            this.errors.phone = "Необходимо указать номер телефона";
-        }
-        if (!this.order.address) {
-            this.errors.address = "Необходимо указать адрес";
-        }
-
-        // Генерация события с обновлёнными ошибками
-        this.evt.emit('formErrors:change', this.errors);
-
-        // Проверка, есть ли ошибки
-        return Object.keys(this.errors).length === 0;
+    if (!this.order.payment) {
+        this.errors.payment = "Необходимо выбрать способ оплаты";
     }
+    if (!this.order.email) {
+        this.errors.email = "Необходимо указать email";
+    }
+    if (!this.order.phone) {
+        this.errors.phone = "Необходимо указать номер телефона";
+    }
+    if (!this.order.address) {
+        this.errors.address = "Необходимо указать адрес";
+    }
+
+    // Генерация события с обновлёнными ошибками
+    this.evt.emit('formErrors:change', this.errors);
+
+    // Проверка, есть ли ошибки
+    return Object.keys(this.errors).length === 0;
+}
+
 }
