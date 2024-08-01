@@ -26,7 +26,7 @@ export class OrderProduct extends Form<IOrder> {
     }
 
     set address(value: string) {
-        const inputElement = this.container.querySelector<HTMLInputElement>('.address');
+        const inputElement = this.container.querySelector<HTMLInputElement>('.form__input[name=address]');
         if (inputElement) {
             inputElement.value = value;
         }

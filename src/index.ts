@@ -89,8 +89,8 @@ events.on('formErrors:change', (errors: Partial<IOrder>) => {
     const orderErrors = Object.values({ address, payment }).filter(Boolean) as string[];
     const contactErrors = Object.values({ phone, email }).filter(Boolean) as string[];
 
-    payForm.valid = !(address || payment);
-    payContactForm.valid = !(email || phone);
+    payForm.valid = !(address && payment);
+    payContactForm.valid = !(email && phone);
 
     payForm.errors = orderErrors;
     payContactForm.errors = contactErrors;
@@ -98,14 +98,12 @@ events.on('formErrors:change', (errors: Partial<IOrder>) => {
 
 
 events.on('order:open', () => {
-    payForm.clear(); // Очистка формы заказа
     modal.render({
         content: payForm.render({ payment: 'card', address: '', valid: false, errors: [] })
     });
 });
 
 events.on('order:submit', () => {
-    payContactForm.clear(); // Очистка формы контактов
     modal.render({
         content: payContactForm.render({ email: '', phone: '', valid: false, errors: [] })
     });
@@ -138,13 +136,12 @@ events.on('contacts:submit', () => {
             basket.items = [];
             basket.total = 0;
 
-            // Очищаем формы после успешного завершения заказа
             payForm.clear();
             payContactForm.clear();
 
-            // Сброс состояния валидации и данных формы
             payForm.render({ payment: 'card', address: '', valid: false, errors: [] });
             payContactForm.render({ email: '', phone: '', valid: false, errors: [] });
+
 
         })
         .catch(err => console.log('Error sending order:', err));
@@ -177,4 +174,6 @@ events.on('items:change', (items: IProduct[] | IProduct) => {
 
 events.on('order:result', () => {
     modal.close();
+    payForm.clear();
+    payContactForm.clear();
 });
